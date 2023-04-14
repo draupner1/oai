@@ -1,8 +1,8 @@
-AIY - Ask question from bash shell and get tailored documentation response 
+oai - Ask question from bash shell and get tailored documentation response 
 ========================================
-![image](https://user-images.githubusercontent.com/654993/216212025-5e9e6725-b042-4010-8f4d-649706565b80.png)
+![image](https://user-images.githubusercontent.com/3023775/232043126-34d4fcae-65d8-449a-9738-7f9726f55d11.png)
 
-AIY is a command line tool that uses OpenAI's language model to provide a documentation-like experience to users. With Aiy, users can get answers to their technical questions and receive step-by-step guidance to complete tasks.
+oai is a command line tool that uses OpenAI's language model to provide a documentation-like experience to users. With oai, users can get answers to their questions and receive step-by-step guidance to complete tasks.
 
 If your organization appreciates this project or is looking for someone to help with your systems and infrastructure, please reach out to me at [LinkedIn](https://www.linkedin.com/in/riddiough/).
 
@@ -16,42 +16,21 @@ If your organization appreciates this project or is looking for someone to help 
 4.  Go to the API Key section ([https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys))
 5.  Create a new secret key
 6.  Copy the API key
-7.  When running Aiy the first time, you will be prompted for your key
+7.  When running oai the first time, you will be prompted for your key
   
 </details>
-
-Install on Debian based systems (Debain, Mint, Ubuntu)
--------------------
-
-#### 1. Install our official public software signing key
-
-```
-wget -O- https://ppa.aimodels.org/aiy/visioninit.gpg | gpg --dearmor > visioninit.gpg
-cat visioninit.gpg | sudo tee -a /usr/share/keyrings/visioninit.gpg > /dev/null
-```
-
-#### 2. Add our repository to your list of repositories
-
-```
-echo 'deb [signed-by=/usr/share/keyrings/visioninit.gpg] https://ppa.aimodels.org/aiy ./' |\
-  sudo tee -a /etc/apt/sources.list.d/aimodels.list
-```
-  
-#### 3. Update your package database and install aiy
-
-```sudo apt update && sudo apt install aiy```
 
 ( Anyone who might be able to help me get this set up with a snap or flatpack? I've been working on trying to set up these workflows )
 
 Quick Start
 -----------
 
-1. Clone repository `git clone https://github.com/visioninit/aiy.git'
-2. Change directory `cd aiy`
+1. Clone repository `git clone https://github.com/draupner1/oai.git'
+2. Change directory `cd oai`
 3. Install dependencies `pip install -r requirements.txt`
-4. Run `python aiy` and enter OpenAI key as prompted to complete setup
-5. Prompt with `python aiy` or `python aiy "how do I..."` 
-
+4. Run `python oai` and enter OpenAI key as prompted to complete setup
+5. Prompt with `python oai` or `python oai "how do I..."` 
+6. Optional: Install link in PATH, or in ~/.local/bin/
 <details>
   <summary>Python Requirements</summary>
 
@@ -64,18 +43,18 @@ Quick Start
 Usage
 -----
 
-To use AIY, simply run the script and provide a prompt that describes the task you want to complete or the question you want to ask.
+To use oai, simply run the script and provide a prompt that describes the task you want to complete or the question you want to ask.
 
 For example:
 
-`python aiy.py "How to install and run a web server on Ubuntu?"`
+`python oai.py "How to install and run a web server on Ubuntu?"`
 
 If you have added the script to your path, you can run it from anywhere:
 
-`aiy "How to install and run a web server on Ubuntu?"`
+`oai "How to install and run a web server on Ubuntu?"`
 
-![image](https://user-images.githubusercontent.com/654993/216211945-068bb6a6-b937-44ae-a09c-b75aa8f4d9d6.png)
-![image](https://user-images.githubusercontent.com/654993/216211997-167f131f-023b-4b90-8f06-fc7a0e377f6b.png)
+![image](https://user-images.githubusercontent.com/3023775/232043124-5bcdc240-4b86-4397-9355-ff0a8dc2f3fe.png)
+![image](https://user-images.githubusercontent.com/3023775/232043119-d25b1e93-c99b-48e6-b9c6-ccbc1270a800.png)
 
 Options
 -------
@@ -87,4 +66,4 @@ Options
 Contributing
 ------------
 
-If you'd like to contribute to AIY, feel free to create a pull request or open an issue. All contributions are welcome!
+If you'd like to contribute to oai, feel free to create a pull request or open an issue. All contributions are welcome!

@@ -31,7 +31,7 @@ def post_completion(openai_response):
     if config.get_expert_mode() != "true":
         openai_response += '\n\n[Notice] OpenAI\'s models have limited knowledge after 2020. Commands and versions' \
                            'may be outdated. Recommendations are not guaranteed to work and may be dangerous.' \
-                           'To disable this notice, switch to expert mode with `aiy --expert`.'
+                           'To disable this notice, switch to expert mode with `oai --expert`.'
     return openai_response
 
 def get_session():
@@ -54,12 +54,12 @@ def main():
     desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
            "A new chat session is started with -n <pre-info> and gives the opportunity to\n"\
            "provide pre-information to your question\n\n"\
-           "Report any issues at: https://github.com/visioninit/aiy/issues"
+           "Report any issues at: https://github.com/draupner1/oai/issues"
     epilog = "Please note that the responses from OpenAI's API are not guaranteed to be accurate and " \
             "use of the tool is at your own risk.\n"
 
     # Create an ArgumentParser object
-    parser = argparse.ArgumentParser(prog='aiy - CLI assistant',
+    parser = argparse.ArgumentParser(prog='oai - CLI assistant',
                                      formatter_class=argparse.RawTextHelpFormatter,
                                      description=desc,
                                      epilog=epilog)
@@ -72,7 +72,7 @@ def main():
     parser.add_argument('-x', '--expert', action="store_true", help='Toggle warning', dest='expert')
     parser.add_argument('-i', '--key', action="store_true", help='Reset API key', dest='apikey')
     parser.add_argument('-v', '--version', action="store_true", help=f'Get Version (hint: it\'s {version})', dest='version')
-    parser.add_argument('--licenses', action="store_true", help='Show Aiy & Third Party Licenses', dest='licenses')
+    parser.add_argument('--licenses', action="store_true", help='Show oai & Third Party Licenses', dest='licenses')
     parser.add_argument('prompt', type=str, nargs='?', help='Prompt to send')
     args = parser.parse_args()
 
@@ -107,7 +107,7 @@ def main():
         sys.exit()
 
     if args.version:
-        console.print("aiy version: " + version)
+        console.print("oai version: " + version)
         sys.exit()
  
     if args.licenses:

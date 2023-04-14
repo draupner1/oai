@@ -19,7 +19,7 @@ def check_config(console):
     if not get_api_key():
         os_uname = os.uname()
 
-        console.print("--[Aiy - CLI Assistant]-------\n"
+        console.print("--[oai - CLI Assistant]-------\n"
                       "\n"
                       "OpenAI API key not found. Please follow these steps to get the API key:\n"
                       "  1. Go to OpenAI website (https://openai.com/api/login)\n"
@@ -28,18 +28,12 @@ def check_config(console):
                       "  4. Create a New Secret Key\n"
                       "  4. Copy the API key\n"
                       "\n"
-                      "The queries sent to OpenAI contain your OS and architecture information, as well as the "
-                      "question you asked. This is so that responses will be catered to you as much as possible\n"
-                      "Example:\n"
-                      "  " + platform.platform() + "\n"
-                      "  " + os_uname.version + "\n"
-                      "  " + os.environ.get("SHELL", "").split("/")[-1] + "\n"
                       "Please be advised that responses from OpenAI's API are not guaranteed to be accurate. "
                       "Use at your own risk.\n")
         key = prompt_new_key()
         set_api_key(key)
     if not get_model():
-        set_model("text-davinci-003")
+        set_model("chatgpt-3.5-turbo")
     if not get_expert_mode():
         set_expert_mode("false")
 
@@ -130,5 +124,5 @@ if os.path.exists('.env'):
     _config_dir = os.path.dirname(os.path.realpath(__file__))
     _config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), ".env")
 else:
-    _config_dir = appdirs.user_config_dir("aiy-config")
-    _config_file = os.path.join(_config_dir, "aiy-config.ini")
+    _config_dir = appdirs.user_config_dir("oai-config")
+    _config_file = os.path.join(_config_dir, "oai-config.ini")

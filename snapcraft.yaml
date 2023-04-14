@@ -1,9 +1,9 @@
-name: aiyy
+name: oai
 base: core20
 version: '0.2'
-summary: CLI assistant for technical information
+summary: CLI OpenAI assistant for questions
 description: |
-  Get technical information on the command line with ease using AIY. Simply type in your question as the prompt and 
+  Get information on the command line with ease using OAI. Simply type in your question as the prompt and 
   receive a beautifully formatted and helpful response. This snap also has options for resetting the API key and 
   toggling warnings.
 architectures:
@@ -12,10 +12,10 @@ grade: devel
 confinement: devmode
 
 apps:
-  aiyy:
-    command: bin/aiyy
+  oai:
+    command: bin/oai
 
 parts:
-  aiyy:
+  oai:
     plugin: python
-    source: https://github.com/visioninit/aiy.git
+    source: https://github.com/draupner1/oai.git
