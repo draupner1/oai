@@ -4,8 +4,6 @@ oai - Ask question from bash shell and get tailored documentation response
 
 oai is a command line tool that uses OpenAI's language model to provide a documentation-like experience to users. With oai, users can get answers to their questions and receive step-by-step guidance to complete tasks.
 
-If your organization appreciates this project or is looking for someone to help with your systems and infrastructure, please reach out to me at [LinkedIn](https://www.linkedin.com/in/riddiough/).
-
 
 <details>
   <summary>Get API Key from OpenAI</summary>
