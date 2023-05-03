@@ -38,7 +38,7 @@ jobs:
         run: |
           cp resources/install/win/installer.cfg installer.cfg
           pynsist installer.cfg
-          cp build/nsis/oai-windows-installer.exe out\oai-windows-installer.exe
+          cp build/nsis/oai-windows-installer.exe out/oai-windows-installer.exe
       - name: Upload Release Windows
         uses: actions/upload-artifact@v3
         with:
