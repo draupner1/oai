@@ -17,8 +17,8 @@ from resources.conduit import get_chat, get_models
 
 
 console = Console()
-version = "0.4.0"
-_session_file_=".messages.json"
+version = "0.4.1"
+_session_file_ = ".messages.json"
 
 def get_lindata():
     lindata = "Users Kernel:" + platform.platform() + "\n" \
@@ -49,6 +49,54 @@ def put_session(messages):
                        indent=4, sort_keys=True,
                        separators=(',', ': '), ensure_ascii=False)
       outfile.write(to_unicode(str_))
+
+def read_text(url):
+    messages = ""
+    with open(url) as sf:
+      for line in sf:
+        line = line.rstrip()
+        messages += line + ' '
+    return messages
+
+def stripp_it(rawt):
+    rawt.replace('\n', ' ').replace('\r', '')
+    rawt.replace('\t', ' ')
+    return rawt
+
+def read_csv(url):
+    messages = ""
+    with open(url) as sf:
+      for line in sf:
+        line = line.rstrip()
+        messages += line + '\n'
+    return messages
+    
+
+def read_pdf(prompt):
+    console.log("PDF not supported yet")
+    exit()
+
+def extract_jsonstr(prompt):
+    file, ext = prompt.split('.')
+    if ext == 'txt':
+      rawt = read_text(prompt)
+      pro = stripp_it(rawt)
+      
+    elif ext in ['py', 'html', 'css', 'c', 'h', 'cpp', 'hpp']:
+      rawt = read_text(prompt)
+      pro = stripp_it(rawt)
+      
+    elif ext == 'csv':
+      rawt = read_csv(prompt)
+      pro = stripp_it(rawt)
+      
+    elif ext == 'pdf':
+      rawt = read_pdf(prompt)
+      
+    else:
+      console.status("File format not supported: "+ext)
+      exit()
+    return pro
 
 def main():
     desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
@@ -82,6 +130,8 @@ def main():
           os.remove(_session_file_)
         if args.prompt:
           prompt = args.prompt
+          if os.path.exists(prompt):
+            prompt = extract_jsonstr(prompt)
         else:
           prompt = ""
         pprompt = f"{prompt}\n\n" \
