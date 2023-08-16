@@ -5,6 +5,7 @@ import platform
 import sys
 import json
 import io
+import importlib, inspect
 
 from rich import pager
 from rich.console import Console
@@ -17,8 +18,12 @@ from resources.conduit import get_chat, get_models
 
 
 console = Console()
-version = "0.4.1"
+version = "0.5.0"
 _session_file_ = ".messages.json"
+
+available_parameters = {}
+available_descr = {}
+available_functions = {}
 
 def get_lindata():
     lindata = "Users Kernel:" + platform.platform() + "\n" \
@@ -98,6 +103,25 @@ def extract_jsonstr(prompt):
       exit()
     return pro
 
+def get_fun_def(func):
+
+    for file in os.listdir(os.path.dirname(__file__)+"/functions"):
+      if file.endswith(".py"):
+        file_name = file[:-3]
+        module_name = 'functions.' + file_name
+        for name, cls in inspect.getmembers(importlib.import_module(module_name), inspect.isclass):
+          if cls.__module__ == module_name:
+           if func in dir(cls):
+            obj = cls()
+            full = inspect.getfullargspec(getattr(obj, func))
+            args = ', '.join(full.args)
+            available_functions[func] = getattr(obj, func)
+            available_parameters[func] = full.args
+            available_descr[func] = obj.functions
+            return available_descr[func][0]
+    return ""
+
+
 def main():
     desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
            "A new chat session is started with -n <pre-info> and gives the opportunity to\n"\
@@ -115,6 +139,8 @@ def main():
       
     # Add arguments for expert mode, API key reset, version, and prompt
     parser.add_argument('-n', '--new', action="store_true", help='Start New Chat', dest='new')
+    parser.add_argument('-f', '--function', default='', help='Enable function call', dest='function')
+ #   parser.add_argument('name', nargs='?', default="")
     parser.add_argument('-l', '--linux', action="store_true", help='Include an assistent message with Kernel/OS/shell', dest='linux')
     parser.add_argument('-m', '--model', action="store_true", help='List models available via OpenAIs API', dest='model')
     parser.add_argument('-x', '--expert', action="store_true", help='Toggle warning', dest='expert')
@@ -180,6 +206,17 @@ def main():
         config.toggle_expert_mode()
         sys.exit()
 
+    func = ""
+    if args.function:
+        func = args.function
+        if func == "":
+            print("No function provided. Exiting...")
+            sys.exit()
+        func = get_fun_def(func)
+        if func == "":
+            print('Function not found: ' + func)
+            sys.exit()
+
     if not args.prompt:
         prompt = Prompt.ask("Documentation Request")
         if prompt == "":
@@ -187,16 +224,44 @@ def main():
             sys.exit()
     else:
         prompt = args.prompt
+    askDict = {'role':'user', 'content':prompt}
     if os.path.isfile(_session_file_):
       messages = get_session()
-      messages.append({'role':'user', 'content':prompt})
+      messages.append(askDict)
     else:
-      messages=[{'role':'user', 'content':prompt}]
+      messages=[askDict]
 
     with console.status(f"Phoning a friend...  ", spinner="pong"):
-        openai_response = post_completion(get_chat(messages))
-        console.print(Markdown(openai_response.strip()))
-        messages.append({'role':'assistant', 'content':openai_response.strip()})
+        openai_response = get_chat(messages, func)
+        if openai_response.get("function_call"):
+          function_name = openai_response["function_call"]["name"]
+          if function_name in available_functions:
+            fuction_to_call = available_functions[function_name]
+          else:
+            print('Bad returned function name from OpenAI API')
+            print(openai_response)
+            messages.append(openai_response)
+            messages.append({"role": "function", "name": function_name, "content": func})
+            function_args = json.loads(openai_response["function_call"]["arguments"].strip())
+            console.print(Markdown(function_args.get("content").strip()))
+            put_session(messages)
+            exit()
+
+          #print(openai_response["function_call"]["arguments"].strip())
+          function_args = json.loads(openai_response["function_call"]["arguments"].strip())
+          function_response = fuction_to_call(
+            heading=function_args.get("heading"),
+            content=function_args.get("content").strip(),
+          )
+          messages.append(openai_response)
+          messages.append({"role": "function", "name": function_name, "content": function_response})
+
+          if function_response != 'stop':
+            openai_response = get_chat(messages)
+          else:
+            openai_response.content = function_args.get("content")
+        console.print(Markdown(openai_response.content.strip()))
+        messages.append({'role':'assistant', 'content':openai_response.content.strip()})
         put_session(messages)
 
 

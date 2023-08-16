@@ -54,6 +54,16 @@ If you have added the script to your path, you can run it from anywhere:
 ![image](https://user-images.githubusercontent.com/3023775/232043124-5bcdc240-4b86-4397-9355-ff0a8dc2f3fe.png)
 ![image](https://user-images.githubusercontent.com/3023775/232043119-d25b1e93-c99b-48e6-b9c6-ccbc1270a800.png)
 
+Plug-ins
+--------
+Available from v.0.5.0
+
+You can now define your own Functions. (See OpenAI-chatAPI for details)
+
+Implement them in a Class file, and drop it in the functions directory where OAI is installed.
+
+Your functions/FuncTemplate.txt, is a class template to get you started.
+
 Options
 -------
 

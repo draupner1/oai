@@ -43,7 +43,7 @@ def get_completion(prompt):
         sys.exit()
     return response
     
-def get_chat(messages):
+def get_chat(messages, func = ""):
     openai.api_key = config.get_api_key()
     engine = config.get_model()
 
@@ -51,10 +51,17 @@ def get_chat(messages):
         print("Prompt is empty. Please enter a prompt.")
 
     try:
-        response = openai.ChatCompletion.create(
-            model=engine,
-            messages=messages
-        ).choices[0].message.content
+        if func == "":
+          response = openai.ChatCompletion.create(
+              model=engine,
+              messages=messages
+          ).choices[0].message
+        else:
+          response = openai.ChatCompletion.create(
+              model=engine,
+              messages=messages,
+              functions=[func]
+          ).choices[0].message
     except openai.error.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")

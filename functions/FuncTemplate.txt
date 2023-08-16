@@ -1,0 +1,37 @@
+import requests
+import json
+import unicodedata
+# coding: utf-8 
+
+class <My_Func_Class>:
+
+  def __init__(self):
+    self.functions = [
+        {
+          "name": "<my_func_name>",
+          "description": "What it does, for chatGPT to understand",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "<param_1>": {
+                "type": "string",
+                "description": "The first parameter of <my_func_name>"
+                },
+              "<param_2": {
+                "type": "string",
+                "description": "The second parameter of <my_func_name"
+                }
+            },
+            "required": [ "<param_1>", "<param_2>" ],
+          },
+        }
+      ]
+
+  def <my_func_name>(self, <param_1>, <param_2>):
+    # Note: Any number of parameters can be used for your function.
+
+    # Do the function with the parameters available.
+    
+    # Return with text string, to be sent to ChatGPT from function.
+    # If no need to call chatGPT any more, return 'stop'. (As in storage)
+    return 'stop'
