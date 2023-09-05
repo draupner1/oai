@@ -18,7 +18,7 @@ from resources.conduit import get_chat, get_models
 
 
 console = Console()
-version = "0.5.0"
+version = "0.5.1"
 _session_file_ = ".messages.json"
 
 available_parameters = {}
@@ -249,9 +249,10 @@ def main():
 
           #print(openai_response["function_call"]["arguments"].strip())
           function_args = json.loads(openai_response["function_call"]["arguments"].strip())
+          #print("Function arguments")
+          #print(function_args)
           function_response = fuction_to_call(
-            heading=function_args.get("heading"),
-            content=function_args.get("content").strip(),
+            **function_args
           )
           messages.append(openai_response)
           messages.append({"role": "function", "name": function_name, "content": function_response})
