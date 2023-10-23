@@ -102,3 +102,117 @@ def get_models():
         print(f"OpenAI API returned an error: {e}")
         sys.exit()
     return response
+    
+def get_image(prompt, num, size):
+    if num<1 or num>10:
+      print("Number of variants to generate must be between 1 to 10")
+      exit()
+    openai.api_key = config.get_api_key()
+    try:
+        response = openai.Image.create(
+                   prompt = prompt,
+                   n = num,
+                   size=size,
+                   model="dall-e-3"
+                   )
+    except openai.error.APIError as e:
+        # Handle API error here, e.g. retry or log
+        print(f"OpenAI API returned an API Error: {e}")
+        sys.exit()
+    except openai.error.APIConnectionError as e:
+        # Handle connection error here
+        print(f"Failed to connect to OpenAI API: {e}")
+        sys,exit()
+    except openai.error.RateLimitError as e:
+        # Handle rate limit error (we recommend using exponential backoff)
+        print(f"OpenAI API request exceeded rate limit: {e}")
+        sys.exit()
+    except openai.error.OpenAIError as e:
+        print(f"OpenAI API returned an error: {e}")
+        sys.exit()
+    return response
+
+
+def get_variant(prompt, num):
+    if num<1 or num>10:
+      print("Number of variants to generate must be between 1 to 10")
+      exit()
+    try:
+      open(prompt, "rb")
+    except OSError:
+      print("Missing Imagefile in this directory")
+      exit()
+    openai.api_key = config.get_api_key()
+    try:
+        response = openai.Image.create_variation(
+                   image = open(prompt, "rb"),
+                   n = num,
+                   size="1024x1024"
+                   )
+    except openai.error.APIError as e:
+        # Handle API error here, e.g. retry or log
+        print(f"OpenAI API returned an API Error: {e}")
+        sys.exit()
+    except openai.error.APIConnectionError as e:
+        # Handle connection error here
+        print(f"Failed to connect to OpenAI API: {e}")
+        sys,exit()
+    except openai.error.RateLimitError as e:
+        # Handle rate limit error (we recommend using exponential backoff)
+        print(f"OpenAI API request exceeded rate limit: {e}")
+        sys.exit()
+    except openai.error.OpenAIError as e:
+        print(f"OpenAI API returned an error: {e}")
+        sys.exit()
+    return response
+
+def get_edit(prompt, num):
+    if num<1 or num>10:
+      print("Number of variants to generate must be between 1 to 10")
+      exit()
+    pl = prompt.split(',')
+    if len(pl) < 3:
+      print("Prompt must contain <img.png>,<mask.png>,The new image prompt")
+      exit()
+    try:
+      open(pl[0], "rb")
+    except OSError:
+      print("Missing Imagefile in this directory")
+      exit()
+    try:
+      open(pl[1], "rb")
+    except OSError:
+      print("Missing Maskfile in this directory")
+      exit()
+    openai.api_key = config.get_api_key()
+    img = pl[0]
+    msk = pl[1]
+    prt = ' '.join(pl[2:])
+#    print( img )
+#    print( msk )
+#    print( prt )
+    try:
+        response = openai.Image.create_edit(
+                   image = open(img, "rb"),
+                   mask = open(msk, "rb"),
+                   prompt = prt,
+                   n = num,
+                   size="1024x1024"
+                   )
+    except openai.error.APIError as e:
+        # Handle API error here, e.g. retry or log
+        print(f"OpenAI API returned an API Error: {e}")
+        sys.exit()
+    except openai.error.APIConnectionError as e:
+        # Handle connection error here
+        print(f"Failed to connect to OpenAI API: {e}")
+        sys,exit()
+    except openai.error.RateLimitError as e:
+        # Handle rate limit error (we recommend using exponential backoff)
+        print(f"OpenAI API request exceeded rate limit: {e}")
+        sys.exit()
+    except openai.error.OpenAIError as e:
+        print(f"OpenAI API returned an error: {e}")
+        sys.exit()
+    return response
+

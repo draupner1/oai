@@ -14,7 +14,7 @@ from rich.prompt import Prompt
 
 from resources import config
 # from resources.conduit import get_completion
-from resources.conduit import get_chat, get_models
+from resources.conduit import get_chat, get_models, get_image, get_variant, get_edit
 
 
 console = Console()
@@ -121,6 +121,12 @@ def get_fun_def(func):
             return available_descr[func][0]
     return ""
 
+def print_url_list(heading, responce):
+    console.print(heading)
+    row = 1
+    for url in responce.data:
+      console.print(Markdown("  [url " + str(row) + "](" + url["url"] + ")"))
+    
 
 def main():
     desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
@@ -129,6 +135,7 @@ def main():
            "Report any issues at: https://github.com/draupner1/oai/issues"
     epilog = "Please note that the responses from OpenAI's API are not guaranteed to be accurate and " \
             "use of the tool is at your own risk.\n"
+    numb = 2
 
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(prog='oai - CLI assistant',
@@ -138,6 +145,12 @@ def main():
 
       
     # Add arguments for expert mode, API key reset, version, and prompt
+    parser.add_argument('-c', '--create', action="store_true", help='Create a new Image, DALL-E3', dest='create')
+    parser.add_argument('-w', '--variant', action="store_true", help='Create a variant of an Image-file. Provide "<image.png>", DALL-E2', dest='variant')
+    parser.add_argument('-e', '--edit', action="store_true", help='Edit part of an Image-file. Provide "<image.png>,<mask.png>, Prompt-string",DALL-E2', dest='edit')
+    parser.add_argument('-d', '--default', default=2, help='How many Images to create. default=2', dest='default')
+    parser.add_argument('-s', '--size', default="1024x1024", help='Image size. default=1024x1024', dest='size')
+    
     parser.add_argument('-n', '--new', action="store_true", help='Start New Chat', dest='new')
     parser.add_argument('-f', '--function', default='', help='Enable function call', dest='function')
  #   parser.add_argument('name', nargs='?', default="")
@@ -149,6 +162,9 @@ def main():
     parser.add_argument('--licenses', action="store_true", help='Show oai & Third Party Licenses', dest='licenses')
     parser.add_argument('prompt', type=str, nargs='?', help='Prompt to send')
     args = parser.parse_args()
+
+    if args.default:
+      numb = int(args.default)
 
     if args.new:
         console.status("Starting a new chat session")
@@ -230,6 +246,34 @@ def main():
       messages.append(askDict)
     else:
       messages=[askDict]
+
+    if args.create:
+      if args.size not in ["1024x1024", "1792x1024", "1024x1792"]:
+        print('DALL-E3 only supports, "1024x1024", "1792x1024", "1024x1792"')
+        print("size: " + args.size)
+        exit()
+      with console.status(f"Phoning a friend...  ", spinner="pong"):
+        print('Doing an image')
+        openai_response = get_image(prompt, numb, args.size)
+       # print(openai_response)
+        print_url_list("Created links:", openai_response)
+        exit()
+
+    if args.variant:
+      with console.status(f"Phoning a friend...  ", spinner="pong"):
+        print('Variant of an image: ' + prompt)
+        openai_response = get_variant(prompt, numb)
+       # print(openai_response)
+        print_url_list("Variant links:", openai_response)
+        exit()
+
+    if args.edit:
+      with console.status(f"Phoning a friend...  ", spinner="pong"):
+        print('Edit of an image: ' + prompt)
+        openai_response = get_edit(prompt, numb)
+       # print(openai_response)
+        print_url_list("Edited links:", openai_response)
+        exit()
 
     with console.status(f"Phoning a friend...  ", spinner="pong"):
         openai_response = get_chat(messages, func)
