@@ -54,6 +54,21 @@ If you have added the script to your path, you can run it from anywhere:
 ![image](https://user-images.githubusercontent.com/3023775/232043124-5bcdc240-4b86-4397-9355-ff0a8dc2f3fe.png)
 ![image](https://user-images.githubusercontent.com/3023775/232043119-d25b1e93-c99b-48e6-b9c6-ccbc1270a800.png)
 
+Image Generation
+----------------
+Available from v.0.6.0
+As the API provides, creation -c is DALL-E3,
+Variants and Edit are DALL-E2.
+
+  -c, --create          Create a new Image, DALL-E3
+  -w, --variant         Create a variant of an Image-file. Provide "<image.png>", DALL-E2
+  -e, --edit            Edit part of an Image-file. Provide "<image.png>,<mask.png>, Prompt-string",DALL-E2
+  -d DEFAULT, --default DEFAULT
+                        How many Images to create. 1-10, default=2
+  -s SIZE, --size SIZE  Image size. default=1024x1024
+
+Will respond with clickable link (that expires) to be opened in Browser.
+
 Plug-ins
 --------
 Available from v.0.5.0
