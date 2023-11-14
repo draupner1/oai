@@ -49,6 +49,7 @@ def put_session(messages):
       to_unicode = unicode
     except NameError:
       to_unicode = str
+   # print(messages)
     with open(_session_file_, 'w', encoding='utf8') as outfile:
       str_ = json.dumps(messages,
                        indent=4, sort_keys=True,
@@ -124,9 +125,10 @@ def get_fun_def(func):
 def print_url_list(heading, responce):
     console.print(heading)
     row = 1
-    for url in responce.data:
-      console.print(Markdown("  [url " + str(row) + "](" + url["url"] + ")"))
-    
+    for img in responce.data:
+      console.print(Markdown("  [url " + str(row) + "](" + img.url + ") " + img.revised_prompt))
+  #    console.print(img.url)
+  #  print(responce)
 
 def main():
     desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
@@ -248,14 +250,19 @@ def main():
       messages=[askDict]
 
     if args.create:
-      if args.size not in ["1024x1024", "1792x1024", "1024x1792"]:
+      if args.size not in ["1:1", "1024x1024", "16:9", "1792x1024", "9:16", "1024x1792"]:
         print('DALL-E3 only supports, "1024x1024", "1792x1024", "1024x1792"')
         print("size: " + args.size)
         exit()
+      if args.size == "1:1":
+        args.size = "1024x1024"
+      if args.size == "16:9":
+        args.size = "1792x1024"
+      if args.size == "9:16":
+        args.size = "1024x1792"
       with console.status(f"Phoning a friend...  ", spinner="pong"):
         print('Doing an image')
         openai_response = get_image(prompt, numb, args.size)
-       # print(openai_response)
         print_url_list("Created links:", openai_response)
         exit()
 
@@ -263,7 +270,6 @@ def main():
       with console.status(f"Phoning a friend...  ", spinner="pong"):
         print('Variant of an image: ' + prompt)
         openai_response = get_variant(prompt, numb)
-       # print(openai_response)
         print_url_list("Variant links:", openai_response)
         exit()
 
@@ -271,34 +277,30 @@ def main():
       with console.status(f"Phoning a friend...  ", spinner="pong"):
         print('Edit of an image: ' + prompt)
         openai_response = get_edit(prompt, numb)
-       # print(openai_response)
         print_url_list("Edited links:", openai_response)
         exit()
 
     with console.status(f"Phoning a friend...  ", spinner="pong"):
         openai_response = get_chat(messages, func)
-        if openai_response.get("function_call"):
-          function_name = openai_response["function_call"]["name"]
+        if openai_response.function_call != None:
+          function_name = openai_response.function_call.name
           if function_name in available_functions:
             fuction_to_call = available_functions[function_name]
           else:
             print('Bad returned function name from OpenAI API')
             print(openai_response)
-            messages.append(openai_response)
             messages.append({"role": "function", "name": function_name, "content": func})
             function_args = json.loads(openai_response["function_call"]["arguments"].strip())
             console.print(Markdown(function_args.get("content").strip()))
             put_session(messages)
             exit()
 
-          #print(openai_response["function_call"]["arguments"].strip())
-          function_args = json.loads(openai_response["function_call"]["arguments"].strip())
+          function_args = json.loads(openai_response.function_call.arguments.strip())
           #print("Function arguments")
           #print(function_args)
           function_response = fuction_to_call(
             **function_args
           )
-          messages.append(openai_response)
           messages.append({"role": "function", "name": function_name, "content": function_response})
 
           if function_response != 'stop':

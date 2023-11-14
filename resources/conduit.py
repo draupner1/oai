@@ -1,11 +1,15 @@
 import sys
 
 import openai
-
+from openai import OpenAI
 from resources import config
 
+client = OpenAI(api_key=config.get_api_key())
+
+
+
 def get_completion(prompt):
-    openai.api_key = config.get_api_key()
+    
     engine = config.get_model()
 
     if prompt is None:
@@ -18,15 +22,13 @@ def get_completion(prompt):
     # print(f"Max tokens: {max_tokens}")
     # print(f"Tokens in prompt: {tokens_prompt}")
     try:
-        response = openai.Completion.create(
-            engine=engine,
-            prompt=prompt,
-            max_tokens=max_tokens,
-            n=1,
-            stop=None,
-            temperature=0.7,
-        ).choices[0].text
-    except openai.error.APIError as e:
+        response = client.completions.create(engine=engine,
+        prompt=prompt,
+        max_tokens=max_tokens,
+        n=1,
+        stop=None,
+        temperature=0.7).choices[0].text
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()
@@ -44,7 +46,7 @@ def get_completion(prompt):
     return response
     
 def get_chat(messages, func = ""):
-    openai.api_key = config.get_api_key()
+    
     engine = config.get_model()
 
     if len(messages) == 0:
@@ -52,17 +54,14 @@ def get_chat(messages, func = ""):
 
     try:
         if func == "":
-          response = openai.ChatCompletion.create(
-              model=engine,
-              messages=messages
-          ).choices[0].message
+          response = client.chat.completions.create(model=engine,
+          messages=messages).choices[0].message
         else:
-          response = openai.ChatCompletion.create(
-              model=engine,
-              messages=messages,
-              functions=[func]
-          ).choices[0].message
-    except openai.error.APIError as e:
+          response = client.chat.completions.create(model=engine,
+          messages=messages,
+          functions=[func]).choices[0].message
+        print(response)
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()
@@ -77,16 +76,16 @@ def get_chat(messages, func = ""):
     except openai.error.OpenAIError as e:
         print(f"OpenAI API returned an error: {e}")
         sys.exit()
+        
     return response
     
 def get_models():
-    openai.api_key = config.get_api_key()
+    
 #    engine = config.get_model()
 
     try:
-        response = openai.Model.list(
-        ).data
-    except openai.error.APIError as e:
+        response = client.models.list().data
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()
@@ -107,15 +106,13 @@ def get_image(prompt, num, size):
     if num<1 or num>10:
       print("Number of variants to generate must be between 1 to 10")
       exit()
-    openai.api_key = config.get_api_key()
+    
     try:
-        response = openai.Image.create(
-                   prompt = prompt,
-                   n = num,
-                   size=size,
-                   model="dall-e-3"
-                   )
-    except openai.error.APIError as e:
+        response = client.images.generate(prompt = prompt,
+        n = num,
+        size=size,
+        model="dall-e-3")
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()
@@ -130,6 +127,7 @@ def get_image(prompt, num, size):
     except openai.error.OpenAIError as e:
         print(f"OpenAI API returned an error: {e}")
         sys.exit()
+    print(response)
     return response
 
 
@@ -142,14 +140,12 @@ def get_variant(prompt, num):
     except OSError:
       print("Missing Imagefile in this directory")
       exit()
-    openai.api_key = config.get_api_key()
+    
     try:
-        response = openai.Image.create_variation(
-                   image = open(prompt, "rb"),
-                   n = num,
-                   size="1024x1024"
-                   )
-    except openai.error.APIError as e:
+        response = client.images.generate(image = open(prompt, "rb"),
+        n = num,
+        size="1024x1024")
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()
@@ -184,7 +180,7 @@ def get_edit(prompt, num):
     except OSError:
       print("Missing Maskfile in this directory")
       exit()
-    openai.api_key = config.get_api_key()
+    
     img = pl[0]
     msk = pl[1]
     prt = ' '.join(pl[2:])
@@ -192,14 +188,12 @@ def get_edit(prompt, num):
 #    print( msk )
 #    print( prt )
     try:
-        response = openai.Image.create_edit(
-                   image = open(img, "rb"),
-                   mask = open(msk, "rb"),
-                   prompt = prt,
-                   n = num,
-                   size="1024x1024"
-                   )
-    except openai.error.APIError as e:
+        response = client.images.generate(image = open(img, "rb"),
+        mask = open(msk, "rb"),
+        prompt = prt,
+        n = num,
+        size="1024x1024")
+    except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
         sys.exit()

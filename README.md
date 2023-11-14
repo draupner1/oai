@@ -54,6 +54,20 @@ If you have added the script to your path, you can run it from anywhere:
 ![image](https://user-images.githubusercontent.com/3023775/232043124-5bcdc240-4b86-4397-9355-ff0a8dc2f3fe.png)
 ![image](https://user-images.githubusercontent.com/3023775/232043119-d25b1e93-c99b-48e6-b9c6-ccbc1270a800.png)
 
+New openAI lib v 1.2
+--------------------
+On new installs after Nov6-23 we get the new python lib v 1.2.
+
+This breaks some calls and responce types.
+
+OAI v.0.6.1 is adapted to the new lib!
+
+Also, providing new shortcuts for -s size when generating Images.
+Use '1:1', '16:9', '9:16' as shorthand for '1024x1024' and...
+
+Also-2, when generating images, printing the returned eventually altered prompt.
+
+
 Image Generation
 ----------------
 Available from v.0.6.0
