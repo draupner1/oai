@@ -197,7 +197,7 @@ def main():
     if args.model:
         model_list = get_models()
         for mod in model_list:
-          print(mod['id'])
+          print(mod.id)
         sys.exit()
 
     if args.version:
