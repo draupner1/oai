@@ -60,7 +60,7 @@ On new installs after Nov6-23 we get the new python lib v 1.2.4
 
 This breaks some calls and response types.
 
-OAI v.0.6.1 is adapted to the new lib!
+OAI v.0.6.2 is adapted to the new lib!
 
 Also, providing new shortcuts for -s size when generating Images.
 Use '1:1', '16:9', '9:16' as shorthand for '1024x1024' and...

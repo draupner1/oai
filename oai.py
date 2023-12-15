@@ -18,7 +18,7 @@ from resources.conduit import get_chat, get_models, get_image, get_variant, get_
 
 
 console = Console()
-version = "0.6.0"
+version = "0.6.2"
 _session_file_ = ".messages.json"
 
 available_parameters = {}
