@@ -96,6 +96,48 @@ def get_model():
             if line.startswith("OPENAI_MODEL="):
                 return line[len("OPENAI_MODEL="):].strip()
 
+def set_oll_model(model):
+    _update_config("OLLAMA_MODEL", model)
+
+
+def get_oll_model():
+    if not os.path.exists(_config_file):
+        return None
+
+    with open(_config_file, "r") as f:
+        for line in f:
+            if line.startswith("OLLAMA_MODEL="):
+                return line[len("OLLAMA_MODEL="):].strip()
+    # if not present Ask & Set it
+    model = Prompt.ask("Provide LLM in format <model:tag>")
+    if model == "":
+        print("No model provided. Exiting...")
+        sys.exit()
+    else:
+        set_oll_model(model)
+        return model
+
+def set_oll_port(port):
+    _update_config("OLLAMA_PORT", port)
+
+
+def get_oll_port():
+    if not os.path.exists(_config_file):
+        return None
+
+    with open(_config_file, "r") as f:
+        for line in f:
+            if line.startswith("OLLAMA_PORT="):
+                return line[len("OLLAMA_PORT="):].strip()
+    # if not present Ask & Set it
+    port = Prompt.ask("Provide ollama PORT ")
+    if port == "":
+        print("No port provided. Exiting...")
+        sys.exit()
+    else:
+        set_oll_port(port)
+        return port
+
 
 def toggle_expert_mode():
     if get_expert_mode() == "true":

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import subprocess
 import platform
 import sys
 import json
@@ -15,10 +16,11 @@ from rich.prompt import Prompt
 from resources import config
 # from resources.conduit import get_completion
 from resources.conduit import get_chat, get_models, get_image, get_variant, get_edit
+from resources.conduoll import ConduOll
 
 
 console = Console()
-version = "0.6.2"
+version = "0.7.0"
 _session_file_ = ".messages.json"
 
 available_parameters = {}
@@ -131,21 +133,30 @@ def print_url_list(heading, responce):
   #  print(responce)
 
 def main():
-    desc = "This tool sends a query to OpenAIs Chat API from the command line.\n\n"\
+    checkit = subprocess.run(["which", "ollama"], capture_output=True, text=True)
+#    if checkit.returncode == 0:
+#      print("ollama installed: " + checkit.stdout )
+#    else:
+#      print("ollama not installed")
+      
+    desc = "oai - CLI assistant\n\nThis tool sends a query to an LLM.\n\n"\
+           "OpenAIs Chat API from the command line, is the default choise. (subscription)\n\n"\
+           "Ollama can provide a range of locally run LLMs.\n\n"\
            "A new chat session is started with -n <pre-info> and gives the opportunity to\n"\
-           "provide pre-information to your question\n\n"\
+           "provide pre-information to your question (openAI only)\n\n"\
            "Report any issues at: https://github.com/draupner1/oai/issues"
-    epilog = "Please note that the responses from OpenAI's API are not guaranteed to be accurate and " \
-            "use of the tool is at your own risk.\n"
+    epilog = "Please note that for Ollama questions, the following flags/functions are not supported:" \
+            "-c,-w,-e,-d,-s,-f,-i, <pre-info> to a new command.\n"
     numb = 2
 
     # Create an ArgumentParser object
-    parser = argparse.ArgumentParser(prog='oai - CLI assistant',
+    parser = argparse.ArgumentParser(prog='oai',
                                      formatter_class=argparse.RawTextHelpFormatter,
                                      description=desc,
                                      epilog=epilog)
 
-      
+    if checkit.returncode == 0:
+      parser.add_argument('prov', nargs='?', default='oai', help='Provider of LLM,<blank>/oai = OpenAI, oll = Ollama')
     # Add arguments for expert mode, API key reset, version, and prompt
     parser.add_argument('-c', '--create', action="store_true", help='Create a new Image, DALL-E3', dest='create')
     parser.add_argument('-w', '--variant', action="store_true", help='Create a variant of an Image-file. Provide "<image.png>", DALL-E2', dest='variant')
@@ -157,7 +168,7 @@ def main():
     parser.add_argument('-f', '--function', default='', help='Enable function call', dest='function')
  #   parser.add_argument('name', nargs='?', default="")
     parser.add_argument('-l', '--linux', action="store_true", help='Include an assistent message with Kernel/OS/shell', dest='linux')
-    parser.add_argument('-m', '--model', action="store_true", help='List models available via OpenAIs API', dest='model')
+    parser.add_argument('-m', '--model', action="store_true", help='List models available via OpenAI/Ollamass API', dest='model')
     parser.add_argument('-x', '--expert', action="store_true", help='Toggle warning', dest='expert')
     parser.add_argument('-i', '--key', action="store_true", help='Reset API key', dest='apikey')
     parser.add_argument('-v', '--version', action="store_true", help=f'Get Version (hint: it\'s {version})', dest='version')
@@ -165,6 +176,19 @@ def main():
     parser.add_argument('prompt', type=str, nargs='?', help='Prompt to send')
     args = parser.parse_args()
 
+    if args.prov not in ['oai', 'oll']:
+      print("Prov: "+args.prov)
+      args.prompt = args.prov
+      args.prov='oai'
+      
+    
+    if checkit.returncode == 0 and args.prov == 'oll':
+      #set up ollama to run local LLM from ollama
+      ollamaMode = True
+      oll = ConduOll()
+    else:
+      ollamaMode = False
+     
     if args.default:
       numb = int(args.default)
 
@@ -172,7 +196,7 @@ def main():
         console.status("Starting a new chat session")
         if os.path.exists(_session_file_):
           os.remove(_session_file_)
-        if args.prompt:
+        if args.prompt and not ollamaMode:
           prompt = args.prompt
           if os.path.exists(prompt):
             prompt = extract_jsonstr(prompt)
@@ -195,7 +219,11 @@ def main():
         sys.exit()
  
     if args.model:
-        model_list = get_models()
+        print(ollamaMode)
+        if ollamaMode:
+          model_list = oll.get_models()
+        else:
+          model_list = get_models()
         for mod in model_list:
           print(mod.id)
         sys.exit()
@@ -216,7 +244,7 @@ def main():
         sys.exit()
 
     config.check_config(console)
-    if args.apikey:
+    if args.apikey and not ollamaMode:
         config.prompt_new_key()
         sys.exit()
 
@@ -225,7 +253,7 @@ def main():
         sys.exit()
 
     func = ""
-    if args.function:
+    if args.function and not ollamaMode:
         func = args.function
         if func == "":
             print("No function provided. Exiting...")
@@ -236,7 +264,8 @@ def main():
             sys.exit()
 
     if not args.prompt:
-        prompt = Prompt.ask("Documentation Request")
+        
+        prompt = Prompt.ask("Prompt Please")
         if prompt == "":
             print("No prompt provided. Exiting...")
             sys.exit()
@@ -249,7 +278,7 @@ def main():
     else:
       messages=[askDict]
 
-    if args.create:
+    if args.create and not ollamaMode:
       if args.size not in ["1:1", "1024x1024", "16:9", "1792x1024", "9:16", "1024x1792"]:
         print('DALL-E3 only supports, "1024x1024", "1792x1024", "1024x1792"')
         print("size: " + args.size)
@@ -266,14 +295,14 @@ def main():
         print_url_list("Created links:", openai_response)
         exit()
 
-    if args.variant:
+    if args.variant and not ollamaMode:
       with console.status(f"Phoning a friend...  ", spinner="pong"):
         print('Variant of an image: ' + prompt)
         openai_response = get_variant(prompt, numb)
         print_url_list("Variant links:", openai_response)
         exit()
 
-    if args.edit:
+    if args.edit and not ollamaMode:
       with console.status(f"Phoning a friend...  ", spinner="pong"):
         print('Edit of an image: ' + prompt)
         openai_response = get_edit(prompt, numb)
@@ -281,8 +310,11 @@ def main():
         exit()
 
     with console.status(f"Phoning a friend...  ", spinner="pong"):
-        openai_response = get_chat(messages, func)
-        if openai_response.function_call != None:
+        if ollamaMode:
+          openai_response = oll.get_chat(messages)
+        else:
+          openai_response = get_chat(messages, func)
+        if not ollamaMode and openai_response.function_call != None:
           function_name = openai_response.function_call.name
           if function_name in available_functions:
             fuction_to_call = available_functions[function_name]
@@ -307,8 +339,12 @@ def main():
             openai_response = get_chat(messages)
           else:
             openai_response.content = function_args.get("content")
-        console.print(Markdown(openai_response.content.strip()))
-        messages.append({'role':'assistant', 'content':openai_response.content.strip()})
+        if ollamaMode:
+          outit = openai_response['content'].strip()
+        else:
+          outit = openai_response.content.strip()
+        console.print(Markdown(outit))
+        messages.append({'role':'assistant', 'content':outit})
         put_session(messages)
 
 

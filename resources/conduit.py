@@ -60,7 +60,6 @@ def get_chat(messages, func = ""):
           response = client.chat.completions.create(model=engine,
           messages=messages,
           functions=[func]).choices[0].message
-        print(response)
     except openai.APIError as e:
         # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
