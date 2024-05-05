@@ -4,6 +4,9 @@ oai - Ask question from bash shell and get tailored documentation response
 
 oai is a command line tool that uses OpenAI's language model to provide a documentation-like experience to users. With oai, users can get answers to their questions and receive step-by-step guidance to complete tasks.
 
+New in 0.7.0, run LLM locally on your computer, by using Ollama.
+Ollama install: https://github.com/ollama/ollama/blob/main/README.md
+Ollama will pull the requested LLM, like llama3:8b.
 
 <details>
   <summary>Get API Key from OpenAI</summary>
@@ -53,6 +56,16 @@ If you have added the script to your path, you can run it from anywhere:
 
 ![image](https://user-images.githubusercontent.com/3023775/232043124-5bcdc240-4b86-4397-9355-ff0a8dc2f3fe.png)
 ![image](https://user-images.githubusercontent.com/3023775/232043119-d25b1e93-c99b-48e6-b9c6-ccbc1270a800.png)
+
+
+New locally run LLMs with Ollama.
+---------------------------------
+To use Ollama as local LLM provider, Add in a <provider> in your oai command.
+Ex: oai oll "Tell me a joke"
+
+Ollama integration only supports prompt:answer format today.
+See oai -h for details.
+
 
 New openAI lib v 1.2.4
 --------------------
