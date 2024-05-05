@@ -81,6 +81,7 @@ def get_api_key():
         for line in f:
             if line.startswith("OPENAI_API_KEY="):
                 return line[len("OPENAI_API_KEY="):].strip()
+    return None
 
 
 def set_model(model):
