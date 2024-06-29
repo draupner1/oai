@@ -134,6 +134,11 @@ def print_url_list(heading, responce):
 
 def main():
     checkit = subprocess.run(["which", "ollama"], capture_output=True, text=True)
+#    import shutil
+#def is_program_installed(program_name):    
+#    """Check whether program_name is installed."""
+#    return shutil.which(program_name)
+
 #    if checkit.returncode == 0:
 #      print("ollama installed: " + checkit.stdout )
 #    else:

@@ -4,12 +4,11 @@ import openai
 from openai import OpenAI
 from resources import config
 
-client = OpenAI(api_key=config.get_api_key())
-
 
 
 def get_completion(prompt):
     
+    client = OpenAI(api_key=config.get_api_key())
     engine = config.get_model()
 
     if prompt is None:
@@ -47,6 +46,7 @@ def get_completion(prompt):
     
 def get_chat(messages, func = ""):
     
+    client = OpenAI(api_key=config.get_api_key())
     engine = config.get_model()
 
     if len(messages) == 0:
@@ -80,6 +80,7 @@ def get_chat(messages, func = ""):
     
 def get_models():
     
+    client = OpenAI(api_key=config.get_api_key())
 #    engine = config.get_model()
 
     try:
@@ -102,6 +103,8 @@ def get_models():
     return response
     
 def get_image(prompt, num, size):
+
+    client = OpenAI(api_key=config.get_api_key())
     if num<1 or num>10:
       print("Number of variants to generate must be between 1 to 10")
       exit()
@@ -131,6 +134,7 @@ def get_image(prompt, num, size):
 
 
 def get_variant(prompt, num):
+    client = OpenAI(api_key=config.get_api_key())
     if num<1 or num>10:
       print("Number of variants to generate must be between 1 to 10")
       exit()
@@ -162,6 +166,7 @@ def get_variant(prompt, num):
     return response
 
 def get_edit(prompt, num):
+    client = OpenAI(api_key=config.get_api_key())
     if num<1 or num>10:
       print("Number of variants to generate must be between 1 to 10")
       exit()
