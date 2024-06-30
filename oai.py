@@ -181,7 +181,7 @@ def main():
     parser.add_argument('prompt', type=str, nargs='?', help='Prompt to send')
     args = parser.parse_args()
 
-    if args.prov not in ['oai', 'oll']:
+    if hasattr(args, 'prov') and args.prov not in ['oai', 'oll']:
       print("Prov: "+args.prov)
       args.prompt = args.prov
       args.prov='oai'
