@@ -187,7 +187,7 @@ def main():
       args.prov='oai'
       
     
-    if checkit.returncode == 0 and args.prov == 'oll':
+    if checkit.returncode == 0 and hasattr(args, 'prov') and args.prov == 'oll':
       #set up ollama to run local LLM from ollama
       ollamaMode = True
       oll = ConduOll()
